@@ -29,9 +29,20 @@
             const accessToken = params.get('access_token');
             if (accessToken) {
                 document.getElementById('status').textContent = 'Logged in!';
-                console.log('Access Token:', accessToken);
+                // Add logout button dynamically
+                const logoutBtn = document.createElement('button');
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.onclick = () => {
+                    window.location.href = '/';  // Simple logout by returning to home
+                };
+                document.getElementById('status').appendChild(logoutBtn);
+                
+                // Show token preview (first few characters)
+                console.log('Access Token:', accessToken.substring(0, 20) + '...');
             }
         }
+
+        
     </script>
 </body>
 </html>
