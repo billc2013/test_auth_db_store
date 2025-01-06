@@ -8,7 +8,10 @@
 <body>
     <h1>Minimal Auth0 Test</h1>
     <button id="login">Login</button>
-    <div id="status"></div>
+    <div id="status">
+        <div id="auth-status"></div>
+        <div id="test-results"></div>
+    </div>
 
     <script type="module">
         // Firebase imports
@@ -29,6 +32,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         // Add a more structured document
         const testFirestore = async (accessToken) => {
@@ -53,7 +57,44 @@
                 return null;
             }
         };
-        
+
+        // Test Firestore Read
+        const testRead = async (docId) => {
+            try {
+                const docRef = doc(db, "users", docId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    console.log("Document data:", docSnap.data());
+                    document.getElementById('test-results').innerHTML += 
+                        `<p>Read successful: ${JSON.stringify(docSnap.data())}</p>`;
+                }
+            } catch (e) {
+                console.error("Error reading document: ", e);
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Read error: ${e.message}</p>`;
+            }
+        };
+
+        // Test Storage
+        const testStorage = async () => {
+            try {
+                const testBlob = new Blob(['Hello, Storage!'], { type: 'text/plain' });
+                const storageRef = ref(storage, 'test/hello.txt');
+                const snapshot = await uploadBytes(storageRef, testBlob);
+                console.log('Uploaded file!');
+                
+                const url = await getDownloadURL(snapshot.ref);
+                console.log('File available at:', url);
+                
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Storage test successful! URL: ${url}</p>`;
+            } catch (e) {
+                console.error("Storage error: ", e);
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Storage error: ${e.message}</p>`;
+            }
+        };
+
         // Auth0 login button handler
         document.getElementById('login').addEventListener('click', () => {
             const auth0Domain = 'dev-dfbbkd2f8l4ykviq.us.auth0.com';
@@ -101,53 +142,6 @@
                 })();
             }
         }
-
-        // Initialize Storage
-        const storage = getStorage(app);
-
-        // Test Firestore Read
-        const testRead = async (docId) => {
-            try {
-                const docRef = doc(db, "users", docId);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    console.log("Document data:", docSnap.data());
-                    document.getElementById('test-results').innerHTML += 
-                        `<p>Read successful: ${JSON.stringify(docSnap.data())}</p>`;
-                }
-            } catch (e) {
-                console.error("Error reading document: ", e);
-                document.getElementById('test-results').innerHTML += 
-                    `<p>Read error: ${e.message}</p>`;
-            }
-        };
-
-        // Test Storage
-        const testStorage = async () => {
-            try {
-                // Create a test blob
-                const testBlob = new Blob(['Hello, Storage!'], { type: 'text/plain' });
-                
-                // Create a reference
-                const storageRef = ref(storage, 'test/hello.txt');
-                
-                // Upload
-                const snapshot = await uploadBytes(storageRef, testBlob);
-                console.log('Uploaded file!');
-                
-                // Get download URL
-                const url = await getDownloadURL(snapshot.ref);
-                console.log('File available at:', url);
-                
-                document.getElementById('test-results').innerHTML += 
-                    `<p>Storage test successful! URL: ${url}</p>`;
-            } catch (e) {
-                console.error("Storage error: ", e);
-                document.getElementById('test-results').innerHTML += 
-                    `<p>Storage error: ${e.message}</p>`;
-            }
-        };
-        
     </script>
 </body>
 </html>
