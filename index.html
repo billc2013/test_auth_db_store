@@ -67,7 +67,7 @@
     </div>
 
     <!-- Auth0 -->
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+    <script src="auth0-spa.js" crossorigin="use-credentials"></script>
     
     <!-- Firebase -->
     <script type="module">
@@ -98,6 +98,18 @@
           appId: "1:845544523689:web:dfce9e291c1829f527e6b8"
         };
 
+        // Add this before initializing Auth0
+        window.addEventListener('load', async () => {
+            try {
+                debugStatus('Starting Auth0 initialization...');
+                await initializeAuth0();
+                debugStatus('Auth0 initialized successfully');
+            } catch (error) {
+                console.error('Auth0 initialization error:', error);
+                addStatus('Auth0 initialization failed: ' + error.message, 'error');
+            }
+        });
+        
         // Your Auth0 config
         const auth0Config = {
             domain: "dev-dfbbkd2f8l4ykviq.us.auth0.com",
