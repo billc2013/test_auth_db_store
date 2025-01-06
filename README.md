@@ -10,6 +10,8 @@ This repository contains a minimal test implementation demonstrating:
   - Cross-Origin-Embedder-Policy: require-corp
   - Cross-Origin-Resource-Policy: cross-origin
 
+Current version is being hosted at: https://webrtest.netlify.app
+
 ### Purpose
 This proof-of-concept confirms that these services can work together while maintaining the strict CORS requirements needed for WebR integration (our next development phase).
 
