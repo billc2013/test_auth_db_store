@@ -13,8 +13,9 @@
     <script type="module">
         // Firebase imports
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
+        import { getFirestore, collection, addDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+        
         // Firebase config
         const firebaseConfig = {
           apiKey: "AIzaSyC5nQrhR3-Z8NCCtSbOa25mkcC3-8KHQCc",
@@ -83,10 +84,61 @@
                 console.log('Access Token:', accessToken);
                 console.log('Firebase initialized:', !!db);
                 
-                // Test Firestore
-                testFirestore(accessToken);
+                // Test Firestore write
+                const docRef = await testFirestore(accessToken);
+
+                // Test Firestore read
+                await testRead(docRef.id);
+                
+                // Test Storage
+                await testStorage();
             }
         }
+
+        // Initialize Storage
+        const storage = getStorage(app);
+
+        // Test Firestore Read
+        const testRead = async (docId) => {
+            try {
+                const docRef = doc(db, "users", docId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    console.log("Document data:", docSnap.data());
+                    document.getElementById('status').textContent += 
+                        `\nRead successful: ${JSON.stringify(docSnap.data())}`;
+                }
+            } catch (e) {
+                console.error("Error reading document: ", e);
+            }
+        };
+
+        // Test Storage
+        const testStorage = async () => {
+            try {
+                // Create a test blob
+                const testBlob = new Blob(['Hello, Storage!'], { type: 'text/plain' });
+                
+                // Create a reference
+                const storageRef = ref(storage, 'test/hello.txt');
+                
+                // Upload
+                const snapshot = await uploadBytes(storageRef, testBlob);
+                console.log('Uploaded file!');
+                
+                // Get download URL
+                const url = await getDownloadURL(snapshot.ref);
+                console.log('File available at:', url);
+                
+                document.getElementById('status').textContent += 
+                    `\nStorage test successful! URL: ${url}`;
+            } catch (e) {
+                console.error("Storage error: ", e);
+                document.getElementById('status').textContent += 
+                    `\nStorage error: ${e.message}`;
+            }
+        };
+        
     </script>
 </body>
 </html>
