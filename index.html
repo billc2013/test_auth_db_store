@@ -64,21 +64,37 @@
         }
 
         // Add after Firebase initialization
+        // Add a more structured document
         const testFirestore = async (accessToken) => {
             try {
-                // Add a document to a test collection
-                const docRef = await addDoc(collection(db, "test"), {
+                const docRef = await addDoc(collection(db, "users"), {
                     message: "Test from Auth0 user",
                     timestamp: new Date(),
-                    token: accessToken.substring(0, 10) + "..." // Just storing part of token for testing
+                    tokenPreview: accessToken.substring(0, 10) + "...",
+                    userId: params.get('sub') || 'anonymous',  // Add Auth0 user ID if available
+                    lastLogin: new Date()
                 });
                 console.log("Document written with ID: ", docRef.id);
-                document.getElementById('status').textContent += "\nFirestore write successful!";
+                
+                // Add success UI feedback
+                document.getElementById('status').textContent += 
+                    `\nFirestore write successful! Doc ID: ${docRef.id}`;
             } catch (e) {
                 console.error("Error adding document: ", e);
-                document.getElementById('status').textContent += "\nFirestore error: " + e.message;
+                document.getElementById('status').textContent += 
+                    `\nFirestore error: ${e.message}`;
             }
         };
+
+        // Add after successful write
+        const testRead = async (docId) => {
+            const docRef = doc(db, "test", docId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+            }
+        };
+
         
         // Modify your auth response handler
         if (window.location.hash) {
