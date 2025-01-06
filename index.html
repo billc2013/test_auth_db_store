@@ -44,13 +44,16 @@
                 // Add success UI feedback
                 document.getElementById('status').textContent += 
                     `\nFirestore write successful! Doc ID: ${docRef.id}`;
+                
+                return docRef;  // Return the document reference
             } catch (e) {
                 console.error("Error adding document: ", e);
                 document.getElementById('status').textContent += 
                     `\nFirestore error: ${e.message}`;
+                return null;
             }
         };
-
+        
         // Auth0 login button handler
         document.getElementById('login').addEventListener('click', () => {
             const auth0Domain = 'dev-dfbbkd2f8l4ykviq.us.auth0.com';
@@ -71,27 +74,37 @@
             const params = new URLSearchParams(window.location.hash.substring(1));
             const accessToken = params.get('access_token');
             if (accessToken) {
-                document.getElementById('status').textContent = 'Logged in!';
-                
-                // Add logout button
-                const logoutBtn = document.createElement('button');
-                logoutBtn.textContent = 'Logout';
-                logoutBtn.onclick = () => {
-                    window.location.href = '/';
-                };
-                document.getElementById('status').appendChild(logoutBtn);
-                
-                console.log('Access Token:', accessToken);
-                console.log('Firebase initialized:', !!db);
-                
-                // Test Firestore write
-                const docRef = await testFirestore(accessToken);
-
-                // Test Firestore read
-                await testRead(docRef.id);
-                
-                // Test Storage
-                await testStorage();
+                // Make this an async IIFE (Immediately Invoked Function Expression)
+                (async () => {
+                    document.getElementById('status').textContent = 'Logged in!';
+                    
+                    // Add logout button
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.textContent = 'Logout';
+                    logoutBtn.onclick = () => {
+                        window.location.href = '/';
+                    };
+                    document.getElementById('status').appendChild(logoutBtn);
+                    
+                    console.log('Access Token:', accessToken);
+                    console.log('Firebase initialized:', !!db);
+                    
+                    try {
+                        // Test Firestore write (modify testFirestore to return docRef)
+                        const docRef = await testFirestore(accessToken);
+                        
+                        // Only proceed with read and storage if write was successful
+                        if (docRef) {
+                            // Test Firestore read
+                            await testRead(docRef.id);
+                            
+                            // Test Storage
+                            await testStorage();
+                        }
+                    } catch (error) {
+                        console.error("Error in tests:", error);
+                    }
+                })();
             }
         }
 
