@@ -72,6 +72,12 @@
     <!-- Firebase -->
     <script type="module">
         // Add this at the start of your script:
+
+        function debugStatus(message, data) {
+            console.log(message, data);
+            addStatus(message, 'info');
+        }
+        
         window.onerror = function(msg, url, line) {
             addStatus(`Error: ${msg} at line ${line}`, 'error');
             return false;
@@ -98,6 +104,8 @@
             clientId: "7UMbmSJEOa0ZqEObjxJmMwY9RFwQxerv",
             authorizationParams: {
                 redirect_uri: window.location.origin
+                // Add Firebase auth handler
+                audience: "https://webr-1de0a.firebaseapp.com/__/auth/handler"
             },
             cacheLocation: "localstorage",
             useRefreshTokens: true,
@@ -147,12 +155,15 @@
             document.getElementById('status-container').appendChild(status);
         }
 
-        async function getFirebaseToken() {
-            if (await auth0Client.isAuthenticated()) {
-                const token = await auth0Client.getTokenSilently();
-                return token;
-            }
-            return null;
+        // After successful Auth0 login, get Firebase token
+        async function getFirebaseToken(auth0Token) {
+            const response = await fetch('https://webr-1de0a.firebaseapp.com/__/auth/handler', {
+                headers: {
+                    'Authorization': `Bearer ${auth0Token}`
+                }
+            });
+            const firebaseToken = await response.json();
+            return firebaseToken;
         }
         
         // Test Firebase DB
@@ -198,9 +209,21 @@
         // Event Listeners
         document.getElementById('login-button').addEventListener('click', async () => {
             try {
+                debugStatus('Starting login process...');
                 await auth0Client.loginWithPopup();
+                debugStatus('Auth0 login successful');
+                
+                // Test token acquisition
+                const auth0Token = await auth0Client.getTokenSilently();
+                debugStatus('Auth0 token acquired');
+                
+                // Test Firebase token exchange
+                const firebaseToken = await getFirebaseToken(auth0Token);
+                debugStatus('Firebase token acquired');
+                
                 updateUI();
             } catch (error) {
+                console.error('Login error:', error);
                 addStatus('Login failed: ' + error.message, 'error');
             }
         });
