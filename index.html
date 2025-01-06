@@ -29,6 +29,28 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Add a more structured document
+        const testFirestore = async (accessToken) => {
+            try {
+                const docRef = await addDoc(collection(db, "users"), {
+                    message: "Test from Auth0 user",
+                    timestamp: new Date(),
+                    tokenPreview: accessToken.substring(0, 10) + "...",
+                    lastLogin: new Date()
+                });
+                console.log("Document written with ID: ", docRef.id);
+                
+                // Add success UI feedback
+                document.getElementById('status').textContent += 
+                    `\nFirestore write successful! Doc ID: ${docRef.id}`;
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                document.getElementById('status').textContent += 
+                    `\nFirestore error: ${e.message}`;
+            }
+        };
+
+        // Auth0 login button handler
         document.getElementById('login').addEventListener('click', () => {
             const auth0Domain = 'dev-dfbbkd2f8l4ykviq.us.auth0.com';
             const clientId = '7UMbmSJEOa0ZqEObjxJmMwY9RFwQxerv';
@@ -49,68 +71,22 @@
             const accessToken = params.get('access_token');
             if (accessToken) {
                 document.getElementById('status').textContent = 'Logged in!';
-                // Add logout button dynamically
+                
+                // Add logout button
                 const logoutBtn = document.createElement('button');
                 logoutBtn.textContent = 'Logout';
                 logoutBtn.onclick = () => {
-                    window.location.href = '/';  // Simple logout by returning to home
+                    window.location.href = '/';
                 };
                 document.getElementById('status').appendChild(logoutBtn);
                 
-                // Show token preview (first few characters)
-                console.log('Access Token:', accessToken.substring(0, 20) + '...');
-                console.log('Firebase initialized:', !!db);
-            }
-        }
-
-        // Add after Firebase initialization
-        // Add a more structured document
-        const testFirestore = async (accessToken) => {
-            try {
-                const docRef = await addDoc(collection(db, "users"), {
-                    message: "Test from Auth0 user",
-                    timestamp: new Date(),
-                    tokenPreview: accessToken.substring(0, 10) + "...",
-                    userId: params.get('sub') || 'anonymous',  // Add Auth0 user ID if available
-                    lastLogin: new Date()
-                });
-                console.log("Document written with ID: ", docRef.id);
-                
-                // Add success UI feedback
-                document.getElementById('status').textContent += 
-                    `\nFirestore write successful! Doc ID: ${docRef.id}`;
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                document.getElementById('status').textContent += 
-                    `\nFirestore error: ${e.message}`;
-            }
-        };
-
-        // Add after successful write
-        const testRead = async (docId) => {
-            const docRef = doc(db, "test", docId);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                console.log("Document data:", docSnap.data());
-            }
-        };
-
-        
-        // Modify your auth response handler
-        if (window.location.hash) {
-            const params = new URLSearchParams(window.location.hash.substring(1));
-            const accessToken = params.get('access_token');
-            if (accessToken) {
-                document.getElementById('status').textContent = 'Logged in!';
                 console.log('Access Token:', accessToken);
                 console.log('Firebase initialized:', !!db);
                 
-                // Add this line to test Firestore
+                // Test Firestore
                 testFirestore(accessToken);
             }
         }
-
-        
     </script>
 </body>
 </html>
