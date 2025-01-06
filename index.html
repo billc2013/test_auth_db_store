@@ -13,7 +13,7 @@
     <script type="module">
         // Firebase imports
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firestore.js';
 
         // Firebase config
         const firebaseConfig = {
@@ -60,6 +60,37 @@
                 // Show token preview (first few characters)
                 console.log('Access Token:', accessToken.substring(0, 20) + '...');
                 console.log('Firebase initialized:', !!db);
+            }
+        }
+
+        // Add after Firebase initialization
+        const testFirestore = async (accessToken) => {
+            try {
+                // Add a document to a test collection
+                const docRef = await addDoc(collection(db, "test"), {
+                    message: "Test from Auth0 user",
+                    timestamp: new Date(),
+                    token: accessToken.substring(0, 10) + "..." // Just storing part of token for testing
+                });
+                console.log("Document written with ID: ", docRef.id);
+                document.getElementById('status').textContent += "\nFirestore write successful!";
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                document.getElementById('status').textContent += "\nFirestore error: " + e.message;
+            }
+        };
+        
+        // Modify your auth response handler
+        if (window.location.hash) {
+            const params = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = params.get('access_token');
+            if (accessToken) {
+                document.getElementById('status').textContent = 'Logged in!';
+                console.log('Access Token:', accessToken);
+                console.log('Firebase initialized:', !!db);
+                
+                // Add this line to test Firestore
+                testFirestore(accessToken);
             }
         }
 
