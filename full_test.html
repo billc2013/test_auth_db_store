@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth & Storage Test</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+    
+    <style>
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #e2e3e5; color: #383d41; }
+        
+        #status-container {
+            margin: 20px 0;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .primary { background-color: #007bff; color: white; }
+        .secondary { background-color: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Auth & Storage Test</h1>
+    <div id="status-container"></div>
+
+    <!-- Auth Test Section -->
+    <div class="test-section">
+        <h2>Auth0 Test</h2>
+        <div id="auth-status"></div>
+        <button id="login-button" class="primary">Login</button>
+        <button id="logout-button" class="secondary" style="display:none;">Logout</button>
+    </div>
+
+    <!-- Firebase DB Test Section -->
+    <div class="test-section">
+        <h2>Firebase DB Test</h2>
+        <button id="db-test-button" class="primary">Test DB Write/Read</button>
+        <div id="db-status"></div>
+    </div>
+
+    <!-- Firebase Storage Test Section -->
+    <div class="test-section">
+        <h2>Firebase Storage Test</h2>
+        <input type="file" id="file-input">
+        <button id="upload-button" class="primary">Upload Test</button>
+        <div id="storage-status"></div>
+    </div>
+
+    <!-- Auth0 -->
+    <script 
+        src="https://unpkg.com/@auth0/auth0-spa-js@2.1.2/dist/auth0-spa-js.production.js" 
+        crossorigin="anonymous"
+        fetchpriority="high"
+    ></script>
+    
+    <!-- Firebase -->
+    <script type="module">
+        // Add this at the start of your script:
+
+        function debugStatus(message, data) {
+            console.log(message, data);
+            addStatus(message, 'info');
+        }
+        
+        window.onerror = function(msg, url, line) {
+            addStatus(`Error: ${msg} at line ${line}`, 'error');
+            return false;
+        };
+
+        // Firebase imports
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+        // Your Firebase config
+        const firebaseConfig = {
+          apiKey: "AIzaSyC5nQrhR3-Z8NCCtSbOa25mkcC3-8KHQCc",
+          authDomain: "webr-1de0a.firebaseapp.com",
+          projectId: "webr-1de0a",
+          storageBucket: "webr-1de0a.firebasestorage.app",
+          messagingSenderId: "845544523689",
+          appId: "1:845544523689:web:dfce9e291c1829f527e6b8"
+        };
+
+        // Add this before initializing Auth0
+        window.addEventListener('load', async () => {
+            try {
+                debugStatus('Starting Auth0 initialization...');
+                await initializeAuth0();
+                debugStatus('Auth0 initialized successfully');
+            } catch (error) {
+                console.error('Auth0 initialization error:', error);
+                addStatus('Auth0 initialization failed: ' + error.message, 'error');
+            }
+        });
+        
+        // Your Auth0 config
+        const auth0Config = {
+            domain: "dev-dfbbkd2f8l4ykviq.us.auth0.com",
+            clientId: "7UMbmSJEOa0ZqEObjxJmMwY9RFwQxerv",
+            authorizationParams: {
+                redirect_uri: window.location.origin,
+                // Add Firebase auth handler
+                audience: "https://webr-1de0a.firebaseapp.com/__/auth/handler"
+            },
+            cacheLocation: "localstorage",
+            useRefreshTokens: true,
+            // Add this for development
+            development: true,  // Allows http in development
+            logoutParams: {
+            returnTo: window.location.origin
+            }
+        };
+        
+        await auth0Client.logout({
+            logoutParams: {
+                returnTo: window.location.origin
+            }
+        });
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Initialize Auth0
+        let auth0Client = null;
+
+        async function initializeAuth0() {
+            auth0Client = await auth0.createAuth0Client(auth0Config);
+            updateUI();
+        }
+
+        // Update UI based on auth state
+        async function updateUI() {
+            const isAuthenticated = await auth0Client.isAuthenticated();
+            document.getElementById('login-button').style.display = isAuthenticated ? 'none' : 'block';
+            document.getElementById('logout-button').style.display = isAuthenticated ? 'block' : 'none';
+            
+            if (isAuthenticated) {
+                const user = await auth0Client.getUser();
+                addStatus('Logged in as: ' + user.email, 'success');
+            }
+        }
+
+        // Status update utility
+        function addStatus(message, type = 'info') {
+            const status = document.createElement('div');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            document.getElementById('status-container').appendChild(status);
+        }
+
+        // After successful Auth0 login, get Firebase token
+        async function getFirebaseToken(auth0Token) {
+            const response = await fetch('https://webr-1de0a.firebaseapp.com/__/auth/handler', {
+                headers: {
+                    'Authorization': `Bearer ${auth0Token}`
+                }
+            });
+            const firebaseToken = await response.json();
+            return firebaseToken;
+        }
+        
+        // Test Firebase DB
+        async function testDatabase() {
+            try {
+                const token = await getFirebaseToken();
+                if (!token) {
+                    addStatus('Please login first', 'error');
+                    return;
+                }
+                // Test write
+                const docRef = await addDoc(collection(db, "test"), {
+                    timestamp: new Date(),
+                    test: "CORS Test"
+                });
+                addStatus('DB Write successful', 'success');
+
+                // Test read
+                const querySnapshot = await getDocs(collection(db, "test"));
+                addStatus('DB Read successful', 'success');
+            } catch (error) {
+                addStatus('DB Test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Test Firebase Storage
+        async function testStorage(file) {
+            try {
+                const token = await getFirebaseToken();
+                if (!token) {
+                    addStatus('Please login first', 'error');
+                    return;
+                }
+                const storageRef = ref(storage, 'test/' + file.name);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                addStatus('Storage Test successful', 'success');
+            } catch (error) {
+                addStatus('Storage Test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('login-button').addEventListener('click', async () => {
+            try {
+                debugStatus('Starting login process...');
+                await auth0Client.loginWithPopup();
+                debugStatus('Auth0 login successful');
+                
+                // Test token acquisition
+                const auth0Token = await auth0Client.getTokenSilently();
+                debugStatus('Auth0 token acquired');
+                
+                // Test Firebase token exchange
+                const firebaseToken = await getFirebaseToken(auth0Token);
+                debugStatus('Firebase token acquired');
+                
+                updateUI();
+            } catch (error) {
+                console.error('Login error:', error);
+                addStatus('Login failed: ' + error.message, 'error');
+            }
+        });
+
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                await auth0Client.logout();
+                updateUI();
+            } catch (error) {
+                addStatus('Logout failed: ' + error.message, 'error');
+            }
+        });
+
+        document.getElementById('db-test-button').addEventListener('click', testDatabase);
+
+        document.getElementById('upload-button').addEventListener('click', async () => {
+            const fileInput = document.getElementById('file-input');
+            if (fileInput.files.length > 0) {
+                await testStorage(fileInput.files[0]);
+            } else {
+                addStatus('Please select a file first', 'error');
+            }
+        });
+
+        // Initialize
+        initializeAuth0();
+    </script>
+</body>
+</html>
