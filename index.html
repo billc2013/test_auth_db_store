@@ -71,6 +71,13 @@
     
     <!-- Firebase -->
     <script type="module">
+        // Add this at the start of your script:
+        window.onerror = function(msg, url, line) {
+            addStatus(`Error: ${msg} at line ${line}`, 'error');
+            return false;
+        };
+
+        // Firebase imports
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
@@ -95,8 +102,17 @@
             cacheLocation: "localstorage",
             useRefreshTokens: true,
             // Add this for development
-            development: true  // Allows http in development
+            development: true,  // Allows http in development
+            logoutParams: {
+            returnTo: window.location.origin
+            }
         };
+        
+        await auth0Client.logout({
+            logoutParams: {
+                returnTo: window.location.origin
+            }
+        });
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -107,7 +123,7 @@
         let auth0Client = null;
 
         async function initializeAuth0() {
-            auth0Client = await createAuth0Client(auth0Config);
+            auth0Client = await auth0.createAuth0Client(auth0Config);
             updateUI();
         }
 
@@ -131,9 +147,22 @@
             document.getElementById('status-container').appendChild(status);
         }
 
+        async function getFirebaseToken() {
+            if (await auth0Client.isAuthenticated()) {
+                const token = await auth0Client.getTokenSilently();
+                return token;
+            }
+            return null;
+        }
+        
         // Test Firebase DB
         async function testDatabase() {
             try {
+                const token = await getFirebaseToken();
+                if (!token) {
+                    addStatus('Please login first', 'error');
+                    return;
+                }
                 // Test write
                 const docRef = await addDoc(collection(db, "test"), {
                     timestamp: new Date(),
@@ -152,6 +181,11 @@
         // Test Firebase Storage
         async function testStorage(file) {
             try {
+                const token = await getFirebaseToken();
+                if (!token) {
+                    addStatus('Please login first', 'error');
+                    return;
+                }
                 const storageRef = ref(storage, 'test/' + file.name);
                 await uploadBytes(storageRef, file);
                 const url = await getDownloadURL(storageRef);
