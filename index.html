@@ -106,6 +106,27 @@
                 throw error;
             }
         };
+
+        const performLogout = () => {
+            console.log('Logging out...'); // Debug log
+            
+            // Clear UI
+            document.getElementById('auth-status').textContent = '';
+            document.getElementById('user-content').style.display = 'none';
+            document.getElementById('test-results').textContent = '';
+            
+            // Clear any text
+            document.getElementById('user-text').value = '';
+            
+            // Remove hash from URL
+            window.history.replaceState(null, '', window.location.pathname);
+            
+            // Optionally, unsubscribe from Firebase listeners if you have any
+            // If you add real-time listeners later, you'll need to clean those up here
+            
+            // Refresh the page to clear Firebase connections
+            window.location.reload();
+        };
         
         // Auth0 login button handler
         document.getElementById('login').addEventListener('click', () => {
@@ -159,7 +180,7 @@
                         const logoutBtn = document.createElement('button');
                         logoutBtn.textContent = 'Logout';
                         logoutBtn.onclick = () => {
-                            window.location.href = '/';
+                            performLogout();
                         };
                         document.getElementById('auth-status').appendChild(logoutBtn);
                     }
