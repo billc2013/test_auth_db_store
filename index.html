@@ -20,9 +20,9 @@
     <script type="module">
         // Firebase imports
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
+        
         // Firebase config
         const firebaseConfig = {
           apiKey: "AIzaSyC5nQrhR3-Z8NCCtSbOa25mkcC3-8KHQCc",
@@ -142,8 +142,7 @@
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
             return await response.json();
-        }
-        
+        };
     </script>
 </body>
 </html>
