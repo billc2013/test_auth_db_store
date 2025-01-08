@@ -87,6 +87,22 @@
             }
         };
 
+        // Auth0 login button handler
+        document.getElementById('login').addEventListener('click', () => {
+            console.log('Login button clicked'); // Debug log
+            const auth0Domain = 'dev-dfbbkd2f8l4ykviq.us.auth0.com';
+            const clientId = '7UMbmSJEOa0ZqEObjxJmMwY9RFwQxerv';
+            const redirectUri = window.location.origin;
+            
+            const auth0LoginUrl = `https://${auth0Domain}/authorize?` +
+                `response_type=token&` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `scope=openid profile email`;
+            
+            console.log('Auth0 URL:', auth0LoginUrl); // Debug log
+            window.location.href = auth0LoginUrl;
+        });
         
         // Auth0 login button handler
         if (window.location.hash) {
