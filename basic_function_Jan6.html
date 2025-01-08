@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Auth0 Test</title>
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+</head>
+<body>
+    <h1>Minimal Auth0 Test</h1>
+    <button id="login">Login</button>
+    <div id="status">
+        <div id="auth-status"></div>
+        <div id="test-results"></div>
+    </div>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+        
+        // Firebase config
+        const firebaseConfig = {
+          apiKey: "AIzaSyC5nQrhR3-Z8NCCtSbOa25mkcC3-8KHQCc",
+          authDomain: "webr-1de0a.firebaseapp.com",
+          projectId: "webr-1de0a",
+          storageBucket: "webr-1de0a.firebasestorage.app",
+          messagingSenderId: "845544523689",
+          appId: "1:845544523689:web:dfce9e291c1829f527e6b8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Add a more structured document
+        const testFirestore = async (accessToken) => {
+            try {
+                const docRef = await addDoc(collection(db, "users"), {
+                    message: "Test from Auth0 user",
+                    timestamp: new Date(),
+                    tokenPreview: accessToken.substring(0, 10) + "...",
+                    lastLogin: new Date()
+                });
+                console.log("Document written with ID: ", docRef.id);
+                
+                // Add success UI feedback
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Firestore write successful! Doc ID: ${docRef.id}</p>`;
+                
+                return docRef;
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Firestore error: ${e.message}</p>`;
+                return null;
+            }
+        };
+
+        // Test Firestore Read
+        const testRead = async (docId) => {
+            try {
+                const docRef = doc(db, "users", docId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    console.log("Document data:", docSnap.data());
+                    document.getElementById('test-results').innerHTML += 
+                        `<p>Read successful: ${JSON.stringify(docSnap.data())}</p>`;
+                }
+            } catch (e) {
+                console.error("Error reading document: ", e);
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Read error: ${e.message}</p>`;
+            }
+        };
+
+        // Test Storage
+        const testStorage = async () => {
+            try {
+                const testBlob = new Blob(['Hello, Storage!'], { type: 'text/plain' });
+                const storageRef = ref(storage, 'test/hello.txt');
+                const snapshot = await uploadBytes(storageRef, testBlob);
+                console.log('Uploaded file!');
+                
+                const url = await getDownloadURL(snapshot.ref);
+                console.log('File available at:', url);
+                
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Storage test successful! URL: ${url}</p>`;
+            } catch (e) {
+                console.error("Storage error: ", e);
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Storage error: ${e.message}</p>`;
+            }
+        };
+
+        // Auth0 login button handler
+        document.getElementById('login').addEventListener('click', () => {
+            const auth0Domain = 'dev-dfbbkd2f8l4ykviq.us.auth0.com';
+            const clientId = '7UMbmSJEOa0ZqEObjxJmMwY9RFwQxerv';
+            const redirectUri = window.location.origin;
+            
+            const auth0LoginUrl = `https://${auth0Domain}/authorize?` +
+                `response_type=token&` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `scope=openid profile email`;
+            
+            window.location.href = auth0LoginUrl;
+        });
+
+        // Check for authentication response
+        if (window.location.hash) {
+            const params = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = params.get('access_token');
+            if (accessToken) {
+                // Set up auth status and logout button
+                document.getElementById('auth-status').textContent = 'Logged in! ';
+                
+                const logoutBtn = document.createElement('button');
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.onclick = () => {
+                    window.location.href = '/';
+                };
+                document.getElementById('auth-status').appendChild(logoutBtn);
+                
+                console.log('Access Token:', accessToken);
+                console.log('Firebase initialized:', !!db);
+                
+                // Run tests in sequence
+                (async () => {
+                    try {
+                        const docRef = await testFirestore(accessToken);
+                        if (docRef) {
+                            await testRead(docRef.id);
+                            await testStorage();
+                        }
+                    } catch (error) {
+                        console.error("Error in test sequence:", error);
+                    }
+                })();
+            }
+        }
+    </script>
+</body>
+</html>
