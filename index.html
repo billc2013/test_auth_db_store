@@ -90,6 +90,7 @@
         
         // Auth0 login button handler
         document.getElementById('login').addEventListener('click', () => {
+            console.log('Login button clicked'); // Add this
             const auth0Domain = 'dev-dfbbkd2f8l4ykviq.us.auth0.com';
             const clientId = '7UMbmSJEOa0ZqEObjxJmMwY9RFwQxerv';
             const redirectUri = window.location.origin;
@@ -100,13 +101,17 @@
                 `redirect_uri=${encodeURIComponent(redirectUri)}&` +
                 `scope=openid profile email`;
             
+            console.log('Auth0 URL:', auth0LoginUrl); // Add this
             window.location.href = auth0LoginUrl;
         });
 
         // Check for authentication response
+        console.log('Hash:', window.location.hash); // Add this
         if (window.location.hash) {
+            console.log('Processing hash...'); // Add this
             const params = new URLSearchParams(window.location.hash.substring(1));
             const accessToken = params.get('access_token');
+            console.log('Access token:', accessToken); // Add this
             if (accessToken) {
                 // Get user info
                 const userInfo = await getUserInfo(accessToken);
