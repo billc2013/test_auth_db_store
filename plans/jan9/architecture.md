@@ -1,7 +1,3 @@
-# Project Structure
-
-# Project Architecture
-
 ## Core Components
 
 ### Authentication Layer (`/src/auth/`)
