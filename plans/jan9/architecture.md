@@ -1,53 +1,54 @@
-```
+# Project Structure
+text
+
+Copy code
 /
 ├── src/
-│   ├── auth/
-│   │   ├── auth0-config.js       # Auth0 configuration
-│   │   ├── auth-service.js       # Auth0 service wrapper
-│   │   └── auth-context.js       # Auth context for React
-│   │
-│   ├── firebase/
-│   │   ├── firebase-config.js    # Firebase configuration
-│   │   ├── firestore-service.js  # Firestore operations
-│   │   └── storage-service.js    # Storage operations
-│   │
-│   ├── components/
-│   │   ├── auth/
-│   │   │   ├── LoginButton.js    # Auth0 login component
-│   │   │   └── LogoutButton.js   # Auth0 logout component
-│   │   │
-│   │   ├── common/
-│   │   │   ├── Header.js         # Application header
-│   │   │   ├── Loading.js        # Loading state component
-│   │   │   └── ErrorMessage.js   # Error display component
-│   │   │
-│   │   └── test/
-│   │       ├── FirestoreTest.js  # Test Firestore operations
-│   │       └── StorageTest.js    # Test Storage operations
-│   │
-│   ├── utils/
-│   │   ├── error-handler.js      # Error handling utilities
-│   │   └── validators.js         # Input validation utilities
-│   │
-│   ├── App.js                    # Main application component
-│   ├── index.js                  # Application entry point
-│   └── index.css                 # Base styles
+│ ├── auth/
+│ │ ├── auth0-config.js # Auth0 configuration
+│ │ ├── auth-service.js # Auth0 service wrapper
+│ │ └── auth-context.js # Auth context for React
+│ │
+│ ├── firebase/
+│ │ ├── firebase-config.js # Firebase configuration
+│ │ ├── firestore-service.js # Firestore operations
+│ │ └── storage-service.js # Storage operations
+│ │
+│ ├── components/
+│ │ ├── auth/
+│ │ │ ├── LoginButton.js # Auth0 login component
+│ │ │ └── LogoutButton.js # Auth0 logout component
+│ │ │
+│ │ ├── common/
+│ │ │ ├── Header.js # Application header
+│ │ │ ├── Loading.js # Loading state component
+│ │ │ └── ErrorMessage.js # Error display component
+│ │ │
+│ │ └── test/
+│ │ ├── FirestoreTest.js # Test Firestore operations
+│ │ └── StorageTest.js # Test Storage operations
+│ │
+│ ├── utils/
+│ │ ├── error-handler.js # Error handling utilities
+│ │ └── validators.js # Input validation utilities
+│ │
+│ ├── App.js # Main application component
+│ ├── index.js # Application entry point
+│ └── index.css # Base styles
 │
 ├── public/
-│   ├── index.html               # HTML template
-│   └── _headers                 # Netlify headers configuration
+│ ├── index.html # HTML template
+│ └── _headers # Netlify headers configuration
 │
 ├── config/
-│   └── cors-config.js           # CORS configuration
+│ └── cors-config.js # CORS configuration
 │
-├── netlify.toml                 # Netlify configuration
+├── netlify.toml # Netlify configuration
 ├── package.json
 └── README.md
-```
-
 Key configuration files:
 
-1. `auth0-config.js`:
+### 1. `auth0-config.js`:
 ```javascript
 export const auth0Config = {
   domain: process.env.REACT_APP_AUTH0_DOMAIN,
@@ -57,7 +58,7 @@ export const auth0Config = {
 };
 ```
 
-2. `firebase-config.js`:
+### 2. `firebase-config.js`:
 ```javascript
 export const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -69,7 +70,7 @@ export const firebaseConfig = {
 };
 ```
 
-3. `cors-config.js`:
+### 3. `cors-config.js`:
 ```javascript
 export const corsHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -78,7 +79,7 @@ export const corsHeaders = {
 };
 ```
 
-4. `netlify.toml`:
+### 4. `netlify.toml`:
 ```toml
 [[headers]]
   for = "/*"
@@ -92,7 +93,7 @@ export const corsHeaders = {
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 ```
 
-5. `public/_headers`:
+### 5. `public/_headers`:
 ```
 /*
   Cross-Origin-Opener-Policy: same-origin
