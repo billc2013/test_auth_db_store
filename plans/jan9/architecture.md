@@ -1,51 +1,56 @@
 # Project Structure
-text
 
-Copy code
-/
-├── src/
-│ ├── auth/
-│ │ ├── auth0-config.js # Auth0 configuration
-│ │ ├── auth-service.js # Auth0 service wrapper
-│ │ └── auth-context.js # Auth context for React
-│ │
-│ ├── firebase/
-│ │ ├── firebase-config.js # Firebase configuration
-│ │ ├── firestore-service.js # Firestore operations
-│ │ └── storage-service.js # Storage operations
-│ │
-│ ├── components/
-│ │ ├── auth/
-│ │ │ ├── LoginButton.js # Auth0 login component
-│ │ │ └── LogoutButton.js # Auth0 logout component
-│ │ │
-│ │ ├── common/
-│ │ │ ├── Header.js # Application header
-│ │ │ ├── Loading.js # Loading state component
-│ │ │ └── ErrorMessage.js # Error display component
-│ │ │
-│ │ └── test/
-│ │ ├── FirestoreTest.js # Test Firestore operations
-│ │ └── StorageTest.js # Test Storage operations
-│ │
-│ ├── utils/
-│ │ ├── error-handler.js # Error handling utilities
-│ │ └── validators.js # Input validation utilities
-│ │
-│ ├── App.js # Main application component
-│ ├── index.js # Application entry point
-│ └── index.css # Base styles
-│
-├── public/
-│ ├── index.html # HTML template
-│ └── _headers # Netlify headers configuration
-│
-├── config/
-│ └── cors-config.js # CORS configuration
-│
-├── netlify.toml # Netlify configuration
-├── package.json
-└── README.md
+# Project Architecture
+
+## Core Components
+
+### Authentication Layer (`/src/auth/`)
+- `auth0-config.js` - Auth0 configuration and setup
+- `auth-service.js` - Service wrapper for Auth0 functionality
+- `auth-context.js` - React context for auth state management
+
+### Firebase Integration (`/src/firebase/`)
+- `firebase-config.js` - Firebase initialization and config
+- `firestore-service.js` - Firestore database operations
+- `storage-service.js` - Firebase storage management
+
+### UI Components (`/src/components/`)
+
+#### Authentication Components (`/auth/`)
+- `LoginButton.js` - Handles Auth0 login flow
+- `LogoutButton.js` - Manages logout process
+
+#### Common UI Elements (`/common/`)
+- `Header.js` - Application header component
+- `Loading.js` - Loading state indicators
+- `ErrorMessage.js` - Error display handling
+
+#### Testing Components (`/test/`)
+- `FirestoreTest.js` - Firestore operation testing
+- `StorageTest.js` - Storage operation testing
+
+### Utilities (`/src/utils/`)
+- `error-handler.js` - Centralized error handling
+- `validators.js` - Input validation logic
+
+### Entry Points
+- `App.js` - Main application component
+- `index.js` - Application bootstrap
+- `index.css` - Global styles
+
+## Configuration Files
+
+### Public Assets (`/public/`)
+- `index.html` - HTML entry point
+- `_headers` - Netlify headers configuration
+
+### System Configuration (`/config/`)
+- `cors-config.js` - CORS security settings
+
+### Deployment Configuration
+- `netlify.toml` - Netlify deployment settings
+- `package.json` - Project dependencies and scripts
+
 Key configuration files:
 
 ### 1. `auth0-config.js`:
