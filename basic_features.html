@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Auth0 Test</title>
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+</head>
+<body>
+    <h1>Minimal Auth0 Test</h1>
+    <button id="login">Login</button>
+    <div id="status">
+        <div id="auth-status"></div>
+        <div id="test-results"></div>
+    </div>
+        <div id="user-content" style="display: none;">
+        <textarea id="user-text" rows="4" cols="50"></textarea>
+        <button id="save-text">Save Text</button>
+    </div>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+        
+        // Firebase config
+        const firebaseConfig = {
+          apiKey: "AIzaSyC5nQrhR3-Z8NCCtSbOa25mkcC3-8KHQCc",
+          authDomain: "webr-1de0a.firebaseapp.com",
+          projectId: "webr-1de0a",
+          storageBucket: "webr-1de0a.firebasestorage.app",
+          messagingSenderId: "845544523689",
+          appId: "1:845544523689:web:dfce9e291c1829f527e6b8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Add a more structured document
+        const saveUserText = async (email, text) => {
+            try {
+                const docRef = doc(db, "userTexts", email);
+                await setDoc(docRef, {
+                    text: text,
+                    lastUpdated: new Date()
+                });
+                console.log("Text saved for user:", email);
+            } catch (e) {
+                console.error("Error saving text:", e);
+            }
+        };
+        
+        const loadUserText = async (email) => {
+            try {
+                const docRef = doc(db, "userTexts", email);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    return docSnap.data().text;
+                }
+                return '';
+            } catch (e) {
+                console.error("Error loading text:", e);
+                return '';
+            }
+        };
+
+        // Test Storage
+        const testStorage = async () => {
+            try {
+                const testBlob = new Blob(['Hello, Storage!'], { type: 'text/plain' });
+                const storageRef = ref(storage, 'test/hello.txt');
+                const snapshot = await uploadBytes(storageRef, testBlob);
+                console.log('Uploaded file!');
+                
+                const url = await getDownloadURL(snapshot.ref);
+                console.log('File available at:', url);
+                
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Storage test successful! URL: ${url}</p>`;
+            } catch (e) {
+                console.error("Storage error: ", e);
+                document.getElementById('test-results').innerHTML += 
+                    `<p>Storage error: ${e.message}</p>`;
+            }
+        };
+
+
+        const getUserInfo = async (accessToken) => {
+            console.log('Getting user info...'); // Add this
+            try {
+                const response = await fetch(`https://dev-dfbbkd2f8l4ykviq.us.auth0.com/userinfo`, {
+                    headers: { 
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log('Response status:', response.status); // Add this
+                const userInfo = await response.json();
+                console.log('User info received:', userInfo); // Add this
+                return userInfo;
+            } catch (error) {
+                console.error('Error getting user info:', error);
+                throw error;
+            }
+        };
+
+        const performLogout = () => {
+            console.log('Logging out...'); // Debug log
+            
+            // Clear UI
+            document.getElementById('auth-status').textContent = '';
+            document.getElementById('user-content').style.display = 'none';
+            document.getElementById('test-results').textContent = '';
+            
+            // Clear any text
+            document.getElementById('user-text').value = '';
+            
+            // Remove hash from URL
+            window.history.replaceState(null, '', window.location.pathname);
+            
+            // Optionally, unsubscribe from Firebase listeners if you have any
+            // If you add real-time listeners later, you'll need to clean those up here
+            
+            // Refresh the page to clear Firebase connections
+            window.location.reload();
+        };
+        
+        // Auth0 login button handler
+        document.getElementById('login').addEventListener('click', () => {
+            console.log('Login button clicked'); // Debug log
+            const auth0Domain = 'dev-dfbbkd2f8l4ykviq.us.auth0.com';
+            const clientId = '7UMbmSJEOa0ZqEObjxJmMwY9RFwQxerv';
+            const redirectUri = window.location.origin;
+            
+            const auth0LoginUrl = `https://${auth0Domain}/authorize?` +
+                `response_type=token&` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `scope=openid profile email`;
+            
+            console.log('Auth0 URL:', auth0LoginUrl); // Debug log
+            window.location.href = auth0LoginUrl;
+        });
+        
+        // Auth0 login button handler
+        if (window.location.hash) {
+            (async () => {
+                try {  // Add error handling wrapper
+                    console.log('Starting auth response handling...'); // Add this
+                    const params = new URLSearchParams(window.location.hash.substring(1));
+                    const accessToken = params.get('access_token');
+                    if (accessToken) {
+                        console.log('Got access token, fetching user info...'); // Add this
+                        const userInfo = await getUserInfo(accessToken);
+                        console.log('User info retrieved:', userInfo); // Add this
+                        const userEmail = userInfo.email;
+        
+                        // Update UI
+                        console.log('Updating UI...'); // Add this
+                        document.getElementById('auth-status').textContent = `Logged in as ${userEmail}! `;
+                        document.getElementById('user-content').style.display = 'block';
+                        
+                        // Load existing text
+                        console.log('Loading saved text...'); // Add this
+                        const savedText = await loadUserText(userEmail);
+                        document.getElementById('user-text').value = savedText;
+                        
+                        console.log('Setting up save handler...'); // Add this
+                        // Add save handler
+                        document.getElementById('save-text').onclick = async () => {
+                            const text = document.getElementById('user-text').value;
+                            await saveUserText(userEmail, text);
+                            alert('Text saved!');
+                        };
+                        
+                        // Add logout button
+                        const logoutBtn = document.createElement('button');
+                        logoutBtn.textContent = 'Logout';
+                        logoutBtn.onclick = () => {
+                            performLogout();
+                        };
+                        document.getElementById('auth-status').appendChild(logoutBtn);
+                    }
+                } catch (error) {
+                    console.error('Error in auth response handling:', error);
+                }
+            })();
+        }
+
+    </script>
+</body>
+</html>
