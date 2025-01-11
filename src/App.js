@@ -1,4 +1,3 @@
-# /src/App.js
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from './firebase/firebase-config.js';
 import { getUserInfo } from './auth/auth-service.js';
