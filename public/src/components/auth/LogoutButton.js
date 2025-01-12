@@ -1,8 +1,14 @@
 export class LogoutButton extends HTMLElement {
     constructor() {
         super();
-        this.innerHTML = '<button>Logout</button>';
-        this.addEventListener('click', this.handleLogout);
+        
+        // Create the button in constructor
+        const button = document.createElement('button');
+        button.textContent = 'Logout';
+        button.addEventListener('click', this.handleLogout.bind(this));
+        
+        // Append the button to the custom element
+        this.appendChild(button);
     }
 
     handleLogout() {
