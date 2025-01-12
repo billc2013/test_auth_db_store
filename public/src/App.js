@@ -2,6 +2,7 @@
 import { getUserInfo } from './auth/auth-service.js';
 import { loadUserText } from './firebase/firestore-service.js';
 import { setCurrentUser, clearAuth } from './services/index.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import './components/auth/LoginButton.js';
 import './components/common/UserContent.js';
 
