@@ -39,8 +39,14 @@ class App {
         const authStatus = document.getElementById('auth-status');
         const userContent = document.getElementById('user-content');
         
+        // Clear existing content
         authStatus.textContent = `Logged in as ${userEmail}! `;
-        authStatus.appendChild(document.createElement('logout-button'));
+        
+        // Create and append logout button as a separate step
+        const logoutButton = document.createElement('logout-button');
+        authStatus.appendChild(logoutButton);
+        
+        // Show user content
         userContent.style.display = 'block';
     }
 
