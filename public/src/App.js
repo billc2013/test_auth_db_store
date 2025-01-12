@@ -6,9 +6,8 @@ import './components/auth/LoginButton.js';
 import './components/auth/LogoutButton.js';
 import './components/common/UserContent.js';
 
-export class App {
+class App {
     constructor() {
-        // No need to initialize Firebase here anymore - it's handled in services/index.js
         this.handleAuthenticationResponse();
     }
 
@@ -24,15 +23,13 @@ export class App {
                     const userInfo = await getUserInfo(accessToken);
                     console.log('User info retrieved:', userInfo);
                     
-                    // Use the shared service to set user info
                     setCurrentUser(userInfo, accessToken);
-
                     this.updateUI(userInfo.email);
                     await this.loadUserData(userInfo.email);
                 }
             } catch (error) {
                 console.error('Error in auth response handling:', error);
-                clearAuth(); // Clear auth state on error
+                clearAuth();
                 this.showError('Authentication failed. Please try again.');
             }
         }
@@ -63,3 +60,8 @@ export class App {
         errorDiv.style.color = 'red';
     }
 }
+
+// Initialize the app when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new App();
+});
