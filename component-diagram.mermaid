@@ -1,0 +1,26 @@
+graph TB
+    A[App.js] --> |Initializes| S[services/index.js]
+    A --> |Uses| AS[auth-service.js]
+    A --> |Uses| FS[firestore-service.js]
+    
+    S --> |Configures| FB[Firebase]
+    AS --> |Configures| Auth0
+    
+    LB[LoginButton] --> |Triggers| AS
+    UC[UserContent] --> |Uses| FS
+    
+    subgraph Components
+        LB
+        UC
+    end
+    
+    subgraph Services
+        S
+        AS
+        FS
+    end
+    
+    subgraph External
+        FB
+        Auth0
+    end

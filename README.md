@@ -1,98 +1,126 @@
-# Minimal Auth0 + Firebase Test with CORS Headers
+# Auth0 + Firebase Integration with CORS Headers
 
-## Current Implementation
-This repository contains a minimal test implementation demonstrating:
-- Auth0 authentication integration
-- Firebase Firestore database operations
-- Firebase Storage operations
-- All functioning with strict CORS headers enabled:
-  - Cross-Origin-Opener-Policy: same-origin
-  - Cross-Origin-Embedder-Policy: require-corp
-  - Cross-Origin-Resource-Policy: cross-origin
+## Overview
+This application demonstrates a secure integration between Auth0 authentication and Firebase services, while maintaining strict CORS headers required for WebR compatibility. It uses a modular, component-based architecture with vanilla JavaScript.
 
-Current version is being hosted at: https://webrtest.netlify.app
+## Live Demo
+Current version is hosted at: https://webrtest.netlify.app
 
-### Purpose
-This proof-of-concept confirms that these services can work together while maintaining the strict CORS requirements needed for WebR integration (our next development phase).
+## Core Features
+- Auth0 Authentication (Login/Logout)
+- Firebase Firestore Integration
+- Text Storage and Retrieval
+- Custom Web Components
+- CORS Security Headers
 
-### Features Tested
-- Auth0 login/logout flow
-- Writing to Firestore database
-- Reading from Firestore database
-- Uploading files to Firebase Storage
-- All operations with proper error handling and user feedback
+## Technical Architecture
 
-## Roadmap: WebR Integration
+### Components
+1. **Authentication**
+   - Auth0 configuration and service layer
+   - Login button component
+   - User session management
 
-### Phase 1: Basic WebR Environment
-- Integrate WebR with existing Auth0/Firebase setup
-- Implement basic R code execution environment
-- Ensure SharedArrayBuffer communication works with CORS headers
-- Implement PostMessage fallback for unsupported browsers
+2. **Database Operations**
+   - Firebase Firestore integration
+   - Document read/write operations
+   - Real-time updates handling
 
-### Phase 2: Student Features
-- Personal workspace for each authenticated student
-- Basic code editor with syntax highlighting
-- Output display for R results
-- Error handling and feedback
+3. **UI Components**
+   - Custom Web Components (LoginButton, UserContent)
+   - Dynamic UI updates
+   - Error handling and user feedback
 
-### Phase 3: Persistence
-- Auto-save functionality
-- Save/load R workspace state
-- Store code snippets in Firestore
-- Store outputs in Firebase Storage
+### Security Features
+- CORS Headers Configuration:
+  ```
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Resource-Policy: cross-origin
+  ```
+- Secure token management
+- Graceful connection cleanup
+- Protected Firebase operations
 
-### Phase 4: Educational Features
-- Pre-loaded datasets for assignments
-- Template assignments
-- Basic plotting capabilities
-- Exercise validation
+## File Structure
+```
+/
+├── public/
+│   ├── index.html              # Entry point
+│   └── src/                    # Source files
+├── _headers                    # Netlify CORS configuration
+├── netlify.toml               # Netlify deployment settings
+└── src/
+    ├── auth/                  # Auth0 configuration
+    │   ├── auth-service.js    # Auth0 service layer
+    │   └── auth0-config.js    # Auth0 settings
+    ├── components/
+    │   ├── auth/
+    │   │   └── LoginButton.js # Login component
+    │   └── common/
+    │       └── UserContent.js # Text editor component
+    ├── firebase/
+    │   ├── firebase-config.js # Firebase settings
+    │   └── firestore-service.js # Firebase operations
+    ├── services/
+    │   └── index.js          # Shared services
+    └── App.js                # Main application logic
+```
 
-### Phase 5: Instructor Features
-- Assignment management
-- Student progress tracking
-- Basic analytics on usage
+## Key Workflows
 
-## Development Notes
+1. **Authentication Flow**
+   - User clicks login
+   - Auth0 handles authentication
+   - Token returned and processed
+   - User session established
 
-### CORS Requirements
-CORS headers must be properly set for:
-- Main application pages
-- JavaScript resources
-- Firebase endpoints
-- WebR resources
+2. **Data Operations**
+   - Authenticated user can save/load text
+   - Firebase handles data persistence
+   - Real-time updates managed
 
-### Security Considerations
-- Token management
-- Data access controls
-- Rate limiting
-- Input validation
+3. **Logout Process**
+   - Graceful Firebase connection cleanup
+   - Session termination
+   - UI reset
 
-### Performance Optimization
-- WebR asset caching
-- Lazy loading of features
-- Efficient storage usage
-- Browser compatibility checks
+## Development Setup
+1. Clone repository
+2. Configure Auth0 credentials in auth0-config.js
+3. Set up Firebase project and update firebase-config.js
+4. Deploy to Netlify or similar platform with CORS support
 
-## Usage Goals
-This system is designed for educational use, specifically:
-- Quick access to R functionality
-- No installation required
-- Minimal interface for basic R operations
-- Focus on specific lab assignments
-- Not intended to replace full R Studio functionality
+## Key Technical Considerations
 
-## Technical Stack
-- Auth0 for authentication
-- Firebase for backend services
-- WebR for R functionality
-- Modern browser features (ES6+)
+### CORS Headers
+Headers are configured in both `_headers` and `netlify.toml` to ensure:
+- SharedArrayBuffer compatibility
+- Cross-origin isolation
+- Resource security
 
-## Getting Started
-[Installation and setup instructions will go here]
+### Firebase Real-time Connections
+- Proper connection management
+- Graceful cleanup during logout
+- Error handling for network operations
 
-## Contributing
-[Contribution guidelines will go here]
+### Component Architecture
+- Custom Web Components for modularity
+- Event-driven communication
+- Clean separation of concerns
 
-## License
-[License information will go here]
+## Future Enhancements
+1. WebR Integration
+   - R code execution environment
+   - Data analysis capabilities
+   - Plot generation
+
+2. Enhanced User Features
+   - File upload/download
+   - Data visualization
+   - Collaborative features
+
+3. Administrative Features
+   - User management
+   - Usage analytics
+   - Access control

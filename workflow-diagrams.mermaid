@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant U as User
+    participant LB as LoginButton
+    participant A as App.js
+    participant Auth0 as Auth0
+    participant FB as Firebase
+    
+    U->>LB: Click Login
+    LB->>Auth0: Redirect to Auth0
+    Auth0->>A: Return with token
+    A->>FB: Initialize connection
+    A->>U: Update UI
+    Note over U,FB: User now authenticated
+    
+    U->>FB: Save text
+    FB-->>U: Confirm save
+    
+    U->>A: Click Logout
+    A->>FB: Disable network
+    Note over A,FB: Wait for cleanup
+    A->>U: Clear UI & Reload

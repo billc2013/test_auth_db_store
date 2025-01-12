@@ -1,0 +1,25 @@
+stateDiagram-v2
+    [*] --> Initialized: App Loads
+    
+    Initialized --> Connected: User Logs In
+    Connected --> Active: Real-time Channel Open
+    
+    Active --> Saving: Save Text
+    Saving --> Active: Save Complete
+    
+    Active --> Loading: Load Text
+    Loading --> Active: Load Complete
+    
+    Active --> Disconnecting: Begin Logout
+    Disconnecting --> Cleanup: Network Disabled
+    Cleanup --> [*]: Page Reload
+    
+    note right of Active
+        Long polling active,
+        Real-time updates possible
+    end note
+    
+    note right of Disconnecting
+        Graceful shutdown to
+        avoid CORS errors
+    end note
