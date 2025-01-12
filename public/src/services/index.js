@@ -2,7 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getStorage } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-import { firebaseConfig } from '../config/firebase-config.js';
+import { firebaseConfig } from '../firebase/firebase-config.js';
 
 // Initialize Firebase services
 const app = initializeApp(firebaseConfig);
