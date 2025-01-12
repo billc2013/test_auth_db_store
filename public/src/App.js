@@ -3,8 +3,6 @@ import { getUserInfo } from './auth/auth-service.js';
 import { loadUserText } from './firebase/firestore-service.js';
 import { setCurrentUser, clearAuth } from './services/index.js';
 import './components/auth/LoginButton.js';
-import './components/auth/LogoutButton.js';
-import './components/common/UserContent.js';
 
 class App {
     constructor() {
@@ -35,6 +33,16 @@ class App {
         }
     }
 
+    performLogout() {
+        console.log('Logging out...');
+        document.getElementById('auth-status').textContent = '';
+        document.getElementById('user-content').style.display = 'none';
+        document.getElementById('test-results').textContent = '';
+        document.getElementById('user-text').value = '';
+        window.history.replaceState(null, '', window.location.pathname);
+        window.location.reload();
+    }
+
     async updateUI(userEmail) {
         const authStatus = document.getElementById('auth-status');
         const userContent = document.getElementById('user-content');
@@ -42,16 +50,18 @@ class App {
         // Clear existing content
         authStatus.innerHTML = '';
         
-        // Create a span for the email text
+        // Create email span
         const emailSpan = document.createElement('span');
         emailSpan.textContent = `Logged in as ${userEmail}! `;
         
-        // Create logout button
-        const logoutButton = document.createElement('logout-button');
+        // Create simple logout button
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.onclick = () => this.performLogout();
         
         // Append both elements
         authStatus.appendChild(emailSpan);
-        authStatus.appendChild(logoutButton);
+        authStatus.appendChild(logoutBtn);
         
         // Show user content
         userContent.style.display = 'block';
