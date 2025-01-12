@@ -1,6 +1,6 @@
 // firebase/firestore-service.js
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../services/index.js';  // Corrected import path with .js extension
+import { doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { db } from '../services/index.js';
 
 export const saveUserText = async (email, text) => {
     try {
