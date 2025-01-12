@@ -1,19 +1,15 @@
-// import { initializeApp } from 'firebase/app';
-import { firebaseConfig } from './firebase/firebase-config.js';
+// App.js
 import { getUserInfo } from './auth/auth-service.js';
 import { loadUserText } from './firebase/firestore-service.js';
+import { setCurrentUser, clearAuth } from './services/index.js';
 import './components/auth/LoginButton.js';
 import './components/auth/LogoutButton.js';
 import './components/common/UserContent.js';
 
 export class App {
     constructor() {
-        this.initializeFirebase();
+        // No need to initialize Firebase here anymore - it's handled in services/index.js
         this.handleAuthenticationResponse();
-    }
-
-    initializeFirebase() {
-        const app = initializeApp(firebaseConfig);
     }
 
     async handleAuthenticationResponse() {
@@ -28,14 +24,16 @@ export class App {
                     const userInfo = await getUserInfo(accessToken);
                     console.log('User info retrieved:', userInfo);
                     
-                    const userEmail = userInfo.email;
-                    localStorage.setItem('userEmail', userEmail);
+                    // Use the shared service to set user info
+                    setCurrentUser(userInfo, accessToken);
 
-                    this.updateUI(userEmail);
-                    await this.loadUserData(userEmail);
+                    this.updateUI(userInfo.email);
+                    await this.loadUserData(userInfo.email);
                 }
             } catch (error) {
                 console.error('Error in auth response handling:', error);
+                clearAuth(); // Clear auth state on error
+                this.showError('Authentication failed. Please try again.');
             }
         }
     }
@@ -50,7 +48,18 @@ export class App {
     }
 
     async loadUserData(userEmail) {
-        const savedText = await loadUserText(userEmail);
-        document.getElementById('user-text').value = savedText;
+        try {
+            const savedText = await loadUserText(userEmail);
+            document.getElementById('user-text').value = savedText;
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            this.showError('Failed to load your data. Please refresh the page.');
+        }
+    }
+
+    showError(message) {
+        const errorDiv = document.getElementById('test-results');
+        errorDiv.textContent = message;
+        errorDiv.style.color = 'red';
     }
 }
