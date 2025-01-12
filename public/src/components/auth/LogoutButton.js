@@ -1,13 +1,10 @@
+// components/auth/LogoutButton.js
 export class LogoutButton extends HTMLElement {
-    constructor() {
-        super();
-        
-        // Create the button in constructor
+    connectedCallback() {
+        // Create button after element is connected to DOM
         const button = document.createElement('button');
         button.textContent = 'Logout';
         button.addEventListener('click', this.handleLogout.bind(this));
-        
-        // Append the button to the custom element
         this.appendChild(button);
     }
 
