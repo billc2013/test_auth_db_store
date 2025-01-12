@@ -4,7 +4,7 @@
 This application demonstrates a secure integration between Auth0 authentication and Firebase services, while maintaining strict CORS headers required for WebR compatibility. It uses a modular, component-based architecture with vanilla JavaScript.
 
 ## Live Demo
-Current version is hosted at: [https://webrtest.netlify.app](https://testauthfirebase.netlify.app)
+Current version is hosted at: https://testauthfirebase.netlify.app
 
 ## Core Features
 - Auth0 Authentication (Login/Logout)
