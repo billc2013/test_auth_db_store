@@ -40,10 +40,17 @@ class App {
         const userContent = document.getElementById('user-content');
         
         // Clear existing content
-        authStatus.textContent = `Logged in as ${userEmail}! `;
+        authStatus.innerHTML = '';
         
-        // Create and append logout button as a separate step
+        // Create a span for the email text
+        const emailSpan = document.createElement('span');
+        emailSpan.textContent = `Logged in as ${userEmail}! `;
+        
+        // Create logout button
         const logoutButton = document.createElement('logout-button');
+        
+        // Append both elements
+        authStatus.appendChild(emailSpan);
         authStatus.appendChild(logoutButton);
         
         // Show user content
