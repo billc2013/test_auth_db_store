@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+// import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from './firebase/firebase-config.js';
 import { getUserInfo } from './auth/auth-service.js';
 import { loadUserText } from './firebase/firestore-service.js';
