@@ -3,6 +3,7 @@ import { getUserInfo } from './auth/auth-service.js';
 import { loadUserText } from './firebase/firestore-service.js';
 import { setCurrentUser, clearAuth } from './services/index.js';
 import './components/auth/LoginButton.js';
+import './components/common/UserContent.js';
 
 class App {
     constructor() {
