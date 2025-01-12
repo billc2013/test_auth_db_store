@@ -1,4 +1,3 @@
-# /src/components/auth/LogoutButton.js
 export class LogoutButton extends HTMLElement {
     constructor() {
         super();
