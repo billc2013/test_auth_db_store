@@ -1,3 +1,6 @@
+// auth/auth-service.js
+import { auth0Config } from './auth0-config.js';
+
 export const getUserInfo = async (accessToken) => {
     console.log('Getting user info...');
     try {
