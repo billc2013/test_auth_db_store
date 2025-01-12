@@ -4,6 +4,11 @@
     <title>Auth0 Firebase Integration</title>
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
     <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+    
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
 </head>
 <body>
     <h1>Auth0 Firebase Integration</h1>
@@ -14,9 +19,6 @@
     </div>
     <user-content></user-content>
 
-    <script type="module">
-        import { App } from '/src/App.js';
-        new App();
-    </script>
+    <script type="module" src="/src/App.js"></script>
 </body>
 </html>
