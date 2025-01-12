@@ -34,15 +34,36 @@ class App {
         }
     }
 
-    performLogout() {
+   async performLogout() {
         console.log('Logging out...');
+        
+        // Clear UI first
         document.getElementById('auth-status').textContent = '';
         document.getElementById('user-content').style.display = 'none';
         document.getElementById('test-results').textContent = '';
         document.getElementById('user-text').value = '';
-        window.history.replaceState(null, '', window.location.pathname);
-        window.location.reload();
+        
+        try {
+            // Clear auth state
+            clearAuth();
+            
+            // Clear URL
+            window.history.replaceState(null, '', window.location.pathname);
+            
+            // Terminate Firebase connections
+            const db = getFirestore();
+            const app = db.app;
+            await app.delete();
+            
+            // Now safe to reload
+            window.location.reload();
+        } catch (error) {
+            console.error('Error during logout:', error);
+            // Reload anyway as fallback
+            window.location.reload();
+        }
     }
+
 
     async updateUI(userEmail) {
         const authStatus = document.getElementById('auth-status');
