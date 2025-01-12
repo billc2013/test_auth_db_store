@@ -1,4 +1,3 @@
-# /src/auth/auth-service.js
 export const getUserInfo = async (accessToken) => {
     console.log('Getting user info...');
     try {
