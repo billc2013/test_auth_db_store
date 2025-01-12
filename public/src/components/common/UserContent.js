@@ -1,4 +1,3 @@
-# /src/components/common/UserContent.js
 export class UserContent extends HTMLElement {
     constructor() {
         super();
