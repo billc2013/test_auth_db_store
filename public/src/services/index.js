@@ -27,3 +27,19 @@ export const clearAuth = () => {
     accessToken = null;
     localStorage.removeItem('userEmail');
 };
+
+// Cleanup function for Firebase
+export const cleanupFirebase = async () => {
+    try {
+        // Terminate Firestore
+        if (db) {
+            await db.terminate();
+        }
+        // Delete the app instance
+        if (app) {
+            await app.delete();
+        }
+    } catch (error) {
+        console.error('Error cleaning up Firebase:', error);
+    }
+};
