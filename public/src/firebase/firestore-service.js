@@ -1,4 +1,3 @@
-# /src/firebase/firestore-service.js
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
 export const saveUserText = async (email, text) => {
