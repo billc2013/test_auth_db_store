@@ -1,8 +1,7 @@
 // App.js
 import { getUserInfo } from './auth/auth-service.js';
 import { loadUserText } from './firebase/firestore-service.js';
-import { setCurrentUser, clearAuth } from './services/index.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { setCurrentUser, clearAuth, cleanupFirebase } from './services/index.js';
 import './components/auth/LoginButton.js';
 import './components/common/UserContent.js';
 
@@ -35,7 +34,7 @@ class App {
         }
     }
 
-   async performLogout() {
+    async performLogout() {
         console.log('Logging out...');
         
         // Clear UI first
@@ -48,15 +47,11 @@ class App {
             // Clear auth state
             clearAuth();
             
-            // Clear URL
+            // Clean up Firebase connections
+            await cleanupFirebase();
+            
+            // Clear URL and reload
             window.history.replaceState(null, '', window.location.pathname);
-            
-            // Terminate Firebase connections
-            const db = getFirestore();
-            const app = db.app;
-            await app.delete();
-            
-            // Now safe to reload
             window.location.reload();
         } catch (error) {
             console.error('Error during logout:', error);
