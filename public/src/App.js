@@ -2,14 +2,17 @@
 import { getUserInfo } from './auth/auth-service.js';
 import { loadUserText } from './firebase/firestore-service.js';
 import { setCurrentUser, clearAuth, db } from './services/index.js';
-import { enableIndexedDbPersistence, disableNetwork } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { disableNetwork } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
+// Import components
 import './components/auth/LoginButton.js';
 import './components/common/UserContent.js';
+import './components/common/WebRRepl.js';  // Add WebR REPL component
 
 class App {
     constructor() {
         this.handleAuthenticationResponse();
+        this.webrRepl = null;
     }
 
     async handleAuthenticationResponse() {
@@ -25,8 +28,11 @@ class App {
                     console.log('User info retrieved:', userInfo);
                     
                     setCurrentUser(userInfo, accessToken);
-                    this.updateUI(userInfo.email);
+                    await this.updateUI(userInfo.email);
                     await this.loadUserData(userInfo.email);
+                    
+                    // Initialize WebR REPL after authentication
+                    this.initializeWebR();
                 }
             } catch (error) {
                 console.error('Error in auth response handling:', error);
@@ -36,20 +42,31 @@ class App {
         }
     }
 
- async performLogout() {
+    initializeWebR() {
+        // Get reference to WebR REPL component
+        this.webrRepl = document.querySelector('webr-repl');
+        // The component handles its own initialization when connected
+    }
+
+    async performLogout() {
         console.log('Starting logout process...');
         
         // Clear UI first
         document.getElementById('auth-status').textContent = '';
         document.getElementById('user-content').style.display = 'none';
         document.getElementById('test-results').textContent = '';
-        document.getElementById('user-text').value = '';
         
         try {
-            // Disable network to close channels gracefully
+            // Cleanup WebR if initialized
+            if (this.webrRepl) {
+                await this.webrRepl.cleanup();
+                this.webrRepl = null;
+            }
+
+            // Disable Firebase network
             await disableNetwork(db);
             
-            // Wait a moment for channels to close
+            // Wait for connections to close
             await new Promise(resolve => setTimeout(resolve, 500));
             
             // Clear auth state
@@ -67,10 +84,10 @@ class App {
         }
     }
 
-
     async updateUI(userEmail) {
         const authStatus = document.getElementById('auth-status');
-        const userContent = document.getElementById('user-content');
+        const userContent = document.querySelector('user-content');
+        const webrRepl = document.querySelector('webr-repl');
         
         // Clear existing content
         authStatus.innerHTML = '';
@@ -79,23 +96,32 @@ class App {
         const emailSpan = document.createElement('span');
         emailSpan.textContent = `Logged in as ${userEmail}! `;
         
-        // Create simple logout button
+        // Create logout button
         const logoutBtn = document.createElement('button');
         logoutBtn.textContent = 'Logout';
         logoutBtn.onclick = () => this.performLogout();
         
-        // Append both elements
+        // Append elements
         authStatus.appendChild(emailSpan);
         authStatus.appendChild(logoutBtn);
         
-        // Show user content
+        // Show content sections
         userContent.style.display = 'block';
+        if (webrRepl) {
+            const replContainer = webrRepl.querySelector('#repl-container');
+            if (replContainer) {
+                replContainer.style.display = 'block';
+            }
+        }
     }
 
     async loadUserData(userEmail) {
         try {
             const savedText = await loadUserText(userEmail);
-            document.getElementById('user-text').value = savedText;
+            const textArea = document.querySelector('#user-text');
+            if (textArea) {
+                textArea.value = savedText;
+            }
         } catch (error) {
             console.error('Error loading user data:', error);
             this.showError('Failed to load your data. Please refresh the page.');

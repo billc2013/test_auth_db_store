@@ -1,18 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Auth0 Firebase Integration</title>
+    <title>Auth0 Firebase WebR Integration</title>
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
     <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        #status {
+            margin: 20px 0;
+        }
+        #auth-status {
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #f0f0f0;
+        }
+        .content-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Auth0 Firebase Integration</h1>
+    <h1>Auth0 Firebase WebR Integration</h1>
+    
+    <!-- Login Button -->
     <login-button></login-button>
+    
+    <!-- Status Container -->
     <div id="status">
         <div id="auth-status"></div>
         <div id="test-results"></div>
     </div>
-    <user-content></user-content>
+
+    <!-- Authenticated Content -->
+    <div class="content-section">
+        <h2>Text Storage</h2>
+        <user-content></user-content>
+    </div>
+
+    <!-- WebR REPL Section -->
+    <div class="content-section">
+        <h2>R REPL</h2>
+        <webr-repl></webr-repl>
+    </div>
 
     <script type="module" src="/src/App.js"></script>
 </body>
