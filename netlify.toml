@@ -4,7 +4,16 @@
     Cross-Origin-Opener-Policy = "same-origin"
     Cross-Origin-Embedder-Policy = "require-corp"
     Cross-Origin-Resource-Policy = "cross-origin"
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/webr-*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+    Cross-Origin-Resource-Policy = "cross-origin"
+    Access-Control-Allow-Origin = "*"
+
+[[redirects]]
+  from = "/webr-serviceworker.js"
+  to = "https://webr.r-wasm.org/v0.2.1/webr-serviceworker.js"
+  status = 200
+  force = true

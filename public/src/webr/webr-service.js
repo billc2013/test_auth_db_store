@@ -12,7 +12,9 @@ class WebRService {
 
         try {
             this.webR = new WebR({
-                baseURL: 'https://webr.r-wasm.org/v0.2.1/'
+                baseURL: 'https://webr.r-wasm.org/v0.2.1/',
+                serviceWorkerUrl: '/webr-serviceworker.js',
+                appendPlatformToWorkerUrl: true,
             });
             
             await this.webR.init();
