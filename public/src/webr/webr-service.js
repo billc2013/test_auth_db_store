@@ -13,8 +13,8 @@ class WebRService {
         try {
             this.webR = new WebR({
                 baseURL: 'https://webr.r-wasm.org/v0.2.1/',
-                serviceWorkerUrl: '/webr-serviceworker.js',
-                appendPlatformToWorkerUrl: true,
+                serviceWorkerUrl: 'https://webr.r-wasm.org/v0.2.1/webr-serviceworker.js',
+                debug: false
             });
             
             await this.webR.init();
@@ -46,6 +46,31 @@ class WebRService {
             return output;
         } catch (error) {
             throw new Error(`R execution error: ${error.message}`);
+        }
+    }
+
+    async createPlot(plotCode) {
+        if (!this.isInitialized) {
+            throw new Error('WebR not initialized');
+        }
+
+        try {
+            // Set up PNG device
+            await this.webR.evalR('png(filename = "plot.png", width = 800, height = 600)');
+            
+            // Execute plotting code
+            await this.webR.evalR(plotCode);
+            
+            // Close device
+            await this.webR.evalR('dev.off()');
+
+            // Get the plot binary data
+            const plotData = await this.webR.FS.readFile("plot.png");
+            
+            // Convert to blob
+            return new Blob([plotData], { type: 'image/png' });
+        } catch (error) {
+            throw new Error(`Plot creation error: ${error.message}`);
         }
     }
 
