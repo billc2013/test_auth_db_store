@@ -15,3 +15,8 @@
 https://webr.r-wasm.org/*
   Cross-Origin-Resource-Policy: cross-origin
   Access-Control-Allow-Origin: *
+
+https://firebasestorage.googleapis.com/*
+Cross-Origin-Resource-Policy: cross-origin
+Cross-Origin-Embedder-Policy: credentialless
+Access-Control-Allow-Origin: *

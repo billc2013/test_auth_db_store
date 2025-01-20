@@ -12,6 +12,13 @@
     Cross-Origin-Resource-Policy = "cross-origin"
     Access-Control-Allow-Origin = "*"
 
+[[headers]]
+  for = "https://firebasestorage.googleapis.com/*"
+  [headers.values]
+    Cross-Origin-Resource-Policy = "cross-origin"
+    Cross-Origin-Embedder-Policy = "credentialless"
+    Access-Control-Allow-Origin = "*"
+
 [[redirects]]
   from = "/webr-serviceworker.js"
   to = "https://webr.r-wasm.org/v0.2.1/webr-serviceworker.js"
