@@ -13,7 +13,8 @@ class WebRService {
         try {
             this.webR = new WebR({
                 baseURL: 'https://webr.r-wasm.org/v0.2.1/',
-                serviceWorkerUrl: 'https://webr.r-wasm.org/v0.2.1/webr-serviceworker.js',
+                // serviceWorkerUrl: 'https://webr.r-wasm.org/v0.2.1/webr-serviceworker.js',
+                serviceWorkerUrl: undefined,
                 debug: false
             });
             
