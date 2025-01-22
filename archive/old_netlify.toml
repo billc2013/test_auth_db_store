@@ -6,14 +6,21 @@
     Cross-Origin-Resource-Policy = "cross-origin"
 
 [[headers]]
-  for = "/webr-*"
+  for = "/webr-*.js"
   [headers.values]
+    Content-Type = "application/javascript"
     Cross-Origin-Resource-Policy = "cross-origin"
     Access-Control-Allow-Origin = "*"
 
 [[headers]]
-  for = "/*.png"
+  for = "https://firebasestorage.googleapis.com/*"
   [headers.values]
-    Cross-Origin-Embedder-Policy = "credentialless"
     Cross-Origin-Resource-Policy = "cross-origin"
+    Cross-Origin-Embedder-Policy = "credentialless"
     Access-Control-Allow-Origin = "*"
+
+[[redirects]]
+  from = "/webr-serviceworker.js"
+  to = "https://webr.r-wasm.org/v0.2.1/webr-serviceworker.js"
+  status = 200
+  force = true
