@@ -25,30 +25,37 @@ export class WebRState {
         if (!localStorage.getItem('userEmail')) {
             throw new Error('User email required to save plot');
         }
-
+    
         const userEmail = localStorage.getItem('userEmail');
         const timestamp = new Date().getTime();
         const plotRef = ref(storage, `plots/${userEmail}/${timestamp}.png`);
-
+    
         try {
             const snapshot = await uploadBytes(plotRef, plotBlob);
-            const url = await getDownloadURL(snapshot.ref);
-            this.currentPlot = url;
-
-            // Save plot URL to Firestore
+            const firebaseUrl = await getDownloadURL(snapshot.ref);
+            
+            // Transform the URL here
+            const proxyUrl = firebaseUrl.replace(
+                'https://firebasestorage.googleapis.com',
+                '/storage'
+            );
+            
+            this.currentPlot = proxyUrl;  // Store the proxy URL
+    
+            // Save proxy URL to Firestore
             const docRef = doc(db, "replStates", userEmail);
             const currentState = await getDoc(docRef);
             const plots = currentState.exists() ? 
                          (currentState.data().plots || []) : [];
             
             plots.push({
-                url,
+                url: proxyUrl,  // Save the proxy URL
                 timestamp,
                 filename: `${timestamp}.png`
             });
-
+    
             await this.save(userEmail, plots);
-            return url;
+            return proxyUrl;
         } catch (error) {
             console.error('Error saving plot:', error);
             throw error;

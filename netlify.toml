@@ -12,8 +12,8 @@
     Cross-Origin-Resource-Policy = "cross-origin"
     Access-Control-Allow-Origin = "*"
 
-[[headers]]
-  for = "/*.png"
-  [headers.values]
-    Cross-Origin-Resource-Policy = "cross-origin"
-    Access-Control-Allow-Origin = "*"
+[[redirects]]
+  from = "/storage/*"
+  to = "https://firebasestorage.googleapis.com/:splat"
+  status = 200
+  force = true
