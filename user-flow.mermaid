@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant U as User
+    participant A as App
+    participant W as WebR
+    participant F as Firebase
+    participant Auth as Auth0
+
+    U->>A: Login
+    A->>Auth: Request Auth
+    Auth-->>A: Return Token
+    A->>F: Initialize Connection
+    A->>W: Initialize WebR
+    
+    alt First Login
+        W-->>A: Fresh REPL
+    else Return User
+        F-->>A: Load Saved State
+        W-->>A: Restored REPL
+    end
+
+    U->>W: Execute R Code
+    W-->>A: Display Result
+    A->>F: Save State
+    
+    U->>A: Logout
+    A->>F: Save Final State
+    A->>W: Cleanup WebR
+    A->>F: Close Connection

@@ -1,0 +1,29 @@
+graph TB
+    subgraph Authentication
+        Auth0[Auth0]
+        Login[Login Component]
+        Auth[Auth Service]
+        Login -->|Triggers| Auth
+        Auth -->|Authenticates| Auth0
+        Auth0 -->|Returns Token| Auth
+    end
+
+    subgraph WebR
+        REPL[REPL Component]
+        WService[WebR Service]
+        WState[WebR State]
+        REPL -->|Executes| WService
+        WService -->|Updates| WState
+    end
+
+    subgraph Storage
+        FB[(Firebase)]
+        Store[Storage Service]
+        WState -->|Saves State| FB
+        FB -->|Loads State| WState
+    end
+
+    Auth -->|Enables| REPL
+    
+    classDef service fill:#f9f,stroke:#333,stroke-width:2px;
+    class Auth0,FB service

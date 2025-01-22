@@ -1,9 +1,11 @@
+// WARNING: These rules are for early development only!
+// TODO: Before production deployment, update these rules to require proper authentication
+// Current rules allow anyone to read and write - NOT SECURE FOR PRODUCTION
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read, write: if true;  // WARNING: Development only - change for production!
     }
   }
 }
