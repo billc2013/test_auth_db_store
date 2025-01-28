@@ -1,6 +1,7 @@
 // auth/auth-service.js
 import { auth0Config } from './auth0-config.js';
 
+// Fetch user info from Auth0
 export const getUserInfo = async (accessToken) => {
     console.log('Getting user info...');
     try {
@@ -20,6 +21,7 @@ export const getUserInfo = async (accessToken) => {
     }
 };
 
+// Redirect the user to the Auth0 login page
 export const initiateLogin = () => {
     console.log('Login button clicked');
     const auth0LoginUrl = `https://${auth0Config.domain}/authorize?` +
@@ -30,4 +32,23 @@ export const initiateLogin = () => {
     
     console.log('Auth0 URL:', auth0LoginUrl);
     window.location.href = auth0LoginUrl;
+};
+
+// Get the Firebase custom token from the ID token claims
+export const getFirebaseToken = async (auth0Client) => {
+    console.log('Getting Firebase custom token...');
+    try {
+        const claims = await auth0Client.getIdTokenClaims();
+        const firebaseToken = claims["https://webr-1de0a.firebaseapp.com/firebase_token"];
+        
+        if (!firebaseToken) {
+            throw new Error('Firebase token not found in ID token claims.');
+        }
+
+        console.log('Firebase custom token retrieved:', firebaseToken);
+        return firebaseToken;
+    } catch (error) {
+        console.error('Error getting Firebase custom token:', error);
+        throw error;
+    }
 };
